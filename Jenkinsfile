@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Build docker image') {
             steps {
-                sh "docker build -t localhost:5003/test-sonar:v1.0.${BUILD_NUMBER} ."
+                sh "docker build -t 10.16.10.90:5003/test-sonar:v1.0.${BUILD_NUMBER} ."
                 script {
                     try {
                         sh 'docker rm -f test'
@@ -24,14 +24,14 @@ pipeline {
                         echo 'Erreur de supp'
                     }
                 }
-                sh "docker run --name test -d -p 8088:8080 localhost:5003/test-sonar:v1.0.${BUILD_NUMBER}"
+                sh "docker run --name test -d -p 8088:8080 10.16.10.90:5003/test-sonar:v1.0.${BUILD_NUMBER}"
             }
         }
         stage('Push docker image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                     sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    sh "docker push localhost:5003/test-sonar:v1.0.${BUILD_NUMBER}"
+                    sh "docker push 10.16.10.90:5003/test-sonar:v1.0.${BUILD_NUMBER}"
                 }
             }
         }
